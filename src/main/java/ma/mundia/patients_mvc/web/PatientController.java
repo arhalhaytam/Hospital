@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PatientController {
     private PatientRepository patientRepository;
-    @GetMapping(path = "/index")
+    @GetMapping(path = "/user/index")
     public String patients(Model model,
                            @RequestParam(name="page",defaultValue ="0")int page,
                            @RequestParam(name="size",defaultValue ="5")int size,
@@ -35,26 +35,31 @@ public class PatientController {
     }
 
 
-    @GetMapping("/delete")
+    @GetMapping("/admin/delete")
     public String delete (Long id,String keyword, int page) {
         patientRepository.deleteById(id);
-        return "redirect:/index?page="+page+"&keyword="+keyword;
+        return "redirect:/user/index?page="+page+"&keyword="+keyword;
     }
-    @GetMapping("/formPatients")
+    @GetMapping("/admin/formPatients")
      public String formPatients (Model model) {
         model.addAttribute("patient", new Patient());
         return "formPatients";
 }
-    @PostMapping("/save")
+    @PostMapping("/admin/save")
     public String savePatient(@Valid Patient patient, BindingResult bindingResult){
         if (bindingResult.hasErrors()) return "formPatients";
         patientRepository.save(patient);
-        return "redirect:/index";
+        return "redirect:/user/index";
     }
-    @GetMapping("/editPatient")
+    @GetMapping("/admin/editPatient")
     public String editPatient(@RequestParam(name = "id") Long id, Model model){
         Patient patient=patientRepository.findById(id).get();
         model.addAttribute("patient",patient);
         return "editPatient";
+    }
+
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/user/index";
     }
 }
